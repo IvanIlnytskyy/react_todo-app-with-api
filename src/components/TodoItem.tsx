@@ -7,7 +7,7 @@ type Props = {
   isLoading: boolean;
   onDelete: (id: number) => void;
   onToggle: (id: number) => void;
-  onUpdate: (id: number, title: string) => void;
+  onUpdate: (id: number, title: string) => Promise<boolean>;
   isTemp?: boolean;
   isDeleting: boolean;
 };
@@ -58,22 +58,25 @@ export const TodoItem: React.FC<Props> = ({
 
     if (trimmed === '') {
       onDelete(todo.id);
-      setEditing(false);
 
       return;
     }
 
     if (trimmed === todo.title) {
-      submittedRef.current = false;
       setEditing(false);
 
       return;
     }
 
     try {
-      await onUpdate(todo.id, trimmed);
+      const success = await onUpdate(todo.id, trimmed);
+
+      if (!success) {
+        return;
+      }
+
       setEditing(false);
-    } catch (error) {
+    } catch (e) {
       submittedRef.current = false;
     }
   };
@@ -142,9 +145,9 @@ export const TodoItem: React.FC<Props> = ({
           className="todo__edit-form"
         >
           <input
+            data-cy="TodoTitleField"
             ref={inputRef}
             className="todo__edit-input"
-            data-cy="TodoTitleField"
             value={editTitle}
             onChange={e => setEditTitle(e.target.value)}
             onBlur={() => {

@@ -169,33 +169,43 @@ export const App: React.FC = () => {
       });
   };
 
-  const handleUpdate = (id: number, newTitle: string) => {
+  const handleUpdate = async (
+    id: number,
+    newTitle: string,
+  ): Promise<boolean> => {
     const todo = todos.find(t => t.id === id);
 
     if (!todo) {
-      return;
+      return false;
     }
 
     const trimmed = newTitle.trim();
 
     if (!trimmed) {
-      return handleDelete(id);
+      await handleDelete(id);
+
+      return false;
     }
 
     if (trimmed === todo.title) {
-      return;
+      return true;
     }
 
     setDeletingTodoIds(prev => [...prev, id]);
 
-    updateTodo(id, { title: trimmed })
-      .then(updatedTodo => {
-        setTodos(prev => prev.map(t => (t.id === id ? updatedTodo : t)));
-      })
-      .catch(() => setErrorMessage(ErrorMessage.Update))
-      .finally(() => {
-        setDeletingTodoIds(prev => prev.filter(i => i !== id));
-      });
+    try {
+      const updatedTodo = await updateTodo(id, { title: trimmed });
+
+      setTodos(prev => prev.map(t => (t.id === id ? updatedTodo : t)));
+
+      return true;
+    } catch {
+      setErrorMessage(ErrorMessage.Update);
+
+      return false;
+    } finally {
+      setDeletingTodoIds(prev => prev.filter(i => i !== id));
+    }
   };
 
   const handleToggleAll = () => {
