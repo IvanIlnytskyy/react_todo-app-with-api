@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 type Props = {
   isLoading: boolean;
@@ -25,7 +26,7 @@ export const Header: React.FC<Props> = ({
     {hasTodos && (
       <button
         type="button"
-        className={`todoapp__toggle-all ${allCompleted ? 'active' : ''}`}
+        className={classNames('todoapp__toggle-all', { active: allCompleted })}
         data-cy="ToggleAllButton"
         onClick={onToggleAll}
         disabled={isLoading}

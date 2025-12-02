@@ -91,19 +91,21 @@ export const TodoItem: React.FC<Props> = ({
     }
   };
 
+  const { id, title, completed } = todo;
+
   return (
     <div
       data-cy="Todo"
-      className={classNames('todo', { completed: todo.completed })}
+      className={classNames('todo', { completed: completed })}
     >
       <label className="todo__status-label">
         <input
-          id={`todo-${todo.id}`}
+          id={`todo-${id}`}
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
-          onChange={() => onToggle(todo.id)}
+          onChange={() => onToggle(id)}
           aria-label="Toggle todo"
         />
       </label>
@@ -122,7 +124,7 @@ export const TodoItem: React.FC<Props> = ({
               }
             }}
           >
-            {todo.title}
+            {title}
           </span>
           {!isTemp && (
             <button
@@ -130,7 +132,7 @@ export const TodoItem: React.FC<Props> = ({
               className="todo__remove"
               data-cy="TodoDelete"
               disabled={isLoading}
-              onClick={() => onDelete(todo.id)}
+              onClick={() => onDelete(id)}
             >
               ×
             </button>
